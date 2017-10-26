@@ -1,6 +1,6 @@
 var getAPL = getAPL || (function() {
     'use strict';
-    var version = 1.0,
+    var version = 1.1,
 
     checkInstall = function() {
         log('getAPL v'+version+' is ready!  Designed for 5e AL APL Calculation');
@@ -27,7 +27,7 @@ var getAPL = getAPL || (function() {
             .filter(_.identity)
             .value();        
     },
-	
+
 	round = function(value, decimals) {
 		return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 	},
@@ -57,6 +57,16 @@ var getAPL = getAPL || (function() {
 	handleInput = function(msg) {
 		var args;
 		var char;
+		var players;
+		
+		try {
+		   players = msg.selected.length
+		}
+		catch (e) {
+		   players = 0 
+		}
+		
+		
 		if (msg.type !== "api") {
 			return;
 		}
@@ -69,12 +79,14 @@ var getAPL = getAPL || (function() {
 						selTot = Number(selTot) + Number(isLevel(a.id))
 					}
 				});
-				if (msg.selected.length < 3 || msg.selected.length > 7) {
+				if (players == 0) {
+				    sendChat ("getAPL", "/w "+msg.who+" **No Tokens Selected, try again.**");
+				} else if (players < 3 || players > 7) {
 					sendChat ("getAPL", "/w "+msg.who+" **Not AL Legal** (less than 3 or more than 7) - please check your token selection and try again.")	
-				} else if ((args[1] == '1') || (args[1] == '2') || (args[1] == '3') || (args[1] == '4') || (args[1] == '5') || (args[1] == '6') || (args[1] == '7') || (args[1] == '8') || (args[1] == '9') || (args[1] == '10') || (args[1] == '11') || (args[1] == '12') || (args[1] == '13') || (args[1] == '14') || (args[1] == '15') || (args[1] == '16') || (args[1] == '17') || (args[1] == '18') || (args[1] == '19') || (args[1] == '20')) {
-					sendChat ("getAPL", "/w "+msg.who+" **"+msg.selected.length+"** Players at APL: **"+round(selTot/msg.selected.length,0)+"** (**"+partyStr(msg.selected.length,args[1],round(selTot/msg.selected.length,0))+"**) - Target APL: **"+args[1]+"**.")
+				} else if (_.range(1,21).includes(parseInt(args[1],10)||0)) {
+					sendChat ("getAPL", "/w "+msg.who+" **"+players+"** Players at APL: **"+round(selTot/players,0)+"** (**"+partyStr(players,args[1],round(selTot/players,0))+"**) - Target APL: **"+args[1]+"**.")
 				} else {
-					sendChat ("getAPL", "/w "+msg.who+" **"+msg.selected.length+"** Players at APL: **"+round(selTot/msg.selected.length,0)+"**.<br /><em>Try adding your target APL to the end for more information such as:</em><br />**!getAPL 3**")
+					sendChat ("getAPL", "/w "+msg.who+" **"+players+"** Players at APL: **"+round(selTot/players,0)+"**.<br /><em>Try adding your target APL to the end for more information such as:</em><br />**!getAPL 3**")
 				}
 		}
     },
